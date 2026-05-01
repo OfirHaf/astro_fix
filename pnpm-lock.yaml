@@ -7015,6 +7015,12 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
 
+  triage/gh-16308:
+    dependencies:
+      astro:
+        specifier: ^6.2.1
+        version: link:../../packages/astro
+
 packages:
 
   '@antfu/utils@0.7.10':
