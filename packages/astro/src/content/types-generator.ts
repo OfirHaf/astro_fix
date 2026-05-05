@@ -621,13 +621,12 @@ async function generateJSONSchema(
 
 	// The `file()` loader uses a schema which applies to every item in the file rather than a schema
 	// for the whole file. We special case this to provide the correct JSON schema to users.
-	// TODO: it would be nice if loaders could indicate this behavior so it wasn’t unique to the built-in loader.
-	if (
+	// TODO: it would be nice if loaders could indicate this behavior so it wasn't unique to the built-in loader.
+	const isFileLoader =
 		collectionConfig.type === CONTENT_LAYER_TYPE &&
-		collectionConfig.loader.name === 'file-loader'
-	) {
-		// `file()` supports arrays of items, but you can’t set `$schema` when using a top-level array,
-		// so we’re only handling the object case.
+		collectionConfig.loader.name === 'file-loader';
+
+	if (isFileLoader) {
 		// We use `z.object()` instead of `z.record()` for compatibility with the next `if` statement.
 		zodSchemaForJson = z.object({}).catchall(zodSchemaForJson);
 	}
@@ -656,7 +655,26 @@ async function generateJSONSchema(
 			// input shape when generating a JSON schema.
 			io: 'input',
 		});
-		const schemaStr = JSON.stringify(schema, null, 2);
+
+		// The `file()` loader supports both arrays and objects as top-level data.
+		// The schema generated above only covers the object case. We wrap it in a `oneOf`
+		// so that array-shaped files also validate correctly in editors.
+		let outputSchema: Record<string, unknown> = schema;
+		if (isFileLoader && typeof schema === 'object' && 'additionalProperties' in schema) {
+			const { $schema: metaSchema, ...objectSchemaWithoutMeta } = schema;
+			outputSchema = {
+				$schema: metaSchema,
+				oneOf: [
+					objectSchemaWithoutMeta,
+					{
+						type: 'array',
+						items: schema.additionalProperties,
+					},
+				],
+			};
+		}
+
+		const schemaStr = JSON.stringify(outputSchema, null, 2);
 		const schemaJsonPath = new URL(
 			`./${collectionKey.replace(/"/g, '')}.schema.json`,
 			collectionSchemasDir,

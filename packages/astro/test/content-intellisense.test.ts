@@ -46,11 +46,25 @@ describe('Content Intellisense', () => {
 		assert.equal(collectionsDir.includes('data-dates.schema.json'), true);
 	});
 
-	it('generates a record JSON schema for the file loader', async () => {
+	it('generates a oneOf JSON schema for the file loader supporting both object and array', async () => {
 		const schema = JSON.parse(await fixture.readFile('../.astro/collections/data-cl.schema.json'));
-		assert.equal(schema.type, 'object');
-		assert.equal(schema.additionalProperties.type, 'object');
-		assert.deepEqual(schema.additionalProperties.properties, {
+		assert.ok(schema.oneOf, 'Expected oneOf at top level');
+		assert.equal(schema.oneOf.length, 2);
+
+		// Object variant
+		const objectVariant = schema.oneOf[0];
+		assert.equal(objectVariant.type, 'object');
+		assert.equal(objectVariant.additionalProperties.type, 'object');
+		assert.deepEqual(objectVariant.additionalProperties.properties, {
+			name: { type: 'string' },
+			color: { type: 'string' },
+		});
+
+		// Array variant
+		const arrayVariant = schema.oneOf[1];
+		assert.equal(arrayVariant.type, 'array');
+		assert.equal(arrayVariant.items.type, 'object');
+		assert.deepEqual(arrayVariant.items.properties, {
 			name: { type: 'string' },
 			color: { type: 'string' },
 		});
