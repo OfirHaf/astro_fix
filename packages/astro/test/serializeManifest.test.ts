@@ -130,6 +130,9 @@ describe('astro:config/server', () => {
 		before(async () => {
 			fixture = await loadFixture({
 				root: './fixtures/astro-manifest/',
+				build: {
+					assetsPrefix: 'https://cdn.example.com',
+				},
 			});
 			devServer = await fixture.startDevServer();
 		});
@@ -149,6 +152,7 @@ describe('astro:config/server', () => {
 			assert.ok($('#root').text().endsWith('/'));
 			assert.ok($('#build-client').text().endsWith('/dist/client/'));
 			assert.ok($('#build-server').text().endsWith('/dist/server/'));
+			assert.equal($('#build-assets-prefix').text(), 'https://cdn.example.com');
 			// URL
 			assert.equal($('#root-url').text(), 'true');
 		});
@@ -158,6 +162,9 @@ describe('astro:config/server', () => {
 		before(async () => {
 			fixture = await loadFixture({
 				root: './fixtures/astro-manifest/',
+				build: {
+					assetsPrefix: 'https://cdn.example.com',
+				},
 			});
 			await fixture.build();
 		});
@@ -171,6 +178,7 @@ describe('astro:config/server', () => {
 			assert.ok($('#root').text().endsWith('/'));
 			assert.ok($('#build-client').text().endsWith('/dist/client/'));
 			assert.ok($('#build-server').text().endsWith('/dist/server/'));
+			assert.equal($('#build-assets-prefix').text(), 'https://cdn.example.com');
 			// URL
 			assert.equal($('#root-url').text(), 'true');
 		});
@@ -182,6 +190,9 @@ describe('astro:config/server', () => {
 				root: './fixtures/astro-manifest/',
 				adapter: testAdapter(),
 				output: 'server',
+				build: {
+					assetsPrefix: 'https://cdn.example.com',
+				},
 			});
 
 			await fixture.build();
@@ -200,6 +211,7 @@ describe('astro:config/server', () => {
 			assert.ok($('#root').text().endsWith('/'));
 			assert.ok($('#build-client').text().endsWith('/dist/client/'));
 			assert.ok($('#build-server').text().endsWith('/dist/server/'));
+			assert.equal($('#build-assets-prefix').text(), 'https://cdn.example.com');
 			// URL
 			assert.equal($('#root-url').text(), 'true');
 		});
