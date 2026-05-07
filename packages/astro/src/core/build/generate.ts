@@ -468,6 +468,19 @@ export async function renderPath({
 		throw err;
 	}
 
+	// Surface server errors from the prerenderer (e.g. when a page throws
+	// during rendering in a non-Node runtime like workerd). Without this
+	// check, a 500 response with an empty body would silently produce a
+	// 0-byte output file instead of failing the build.
+	if (response.status >= 500) {
+		const errorBody = response.body ? await response.text() : '';
+		const details = errorBody ? `\n${errorBody}` : '';
+		throw new AstroError({
+			...AstroErrorData.UnhandledRejection,
+			message: `Failed to prerender the route "${pathname}". The server responded with status ${response.status}.${details}`,
+		});
+	}
+
 	// Handle the response
 	let body: string | Uint8Array;
 	const responseHeaders = response.headers;
