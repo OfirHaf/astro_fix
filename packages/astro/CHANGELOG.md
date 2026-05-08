@@ -1,5 +1,17 @@
 # astro
 
+## 6.3.2
+
+### Patch Changes
+
+- [#16638](https://github.com/withastro/astro/pull/16638) [`272185b`](https://github.com/withastro/astro/commit/272185bcccf6a4adcd7575f319bf91f2e5306c6d) Thanks [@ematipico](https://github.com/ematipico)! - Fixes a bug where the Astro compiler wasn't freed at the end of the build. After the fix, the memory used by the compiler is now correctly freed at the end of the build.
+
+- [#16544](https://github.com/withastro/astro/pull/16544) [`d365c97`](https://github.com/withastro/astro/commit/d365c975ba2d88fc1dbdfe698df2bf9e2eafadce) Thanks [@matthewp](https://github.com/matthewp)! - Tightens `isRemotePath()` to reject control characters after a leading slash and fixes the dev image endpoint origin check
+
+- Updated dependencies [[`d365c97`](https://github.com/withastro/astro/commit/d365c975ba2d88fc1dbdfe698df2bf9e2eafadce), [`9256345`](https://github.com/withastro/astro/commit/92563452ce866d9f9b950ad4b2adc808d10e8014)]:
+  - @astrojs/internal-helpers@0.9.1
+  - @astrojs/markdown-remark@7.1.2
+
 ## 6.3.1
 
 ### Patch Changes
