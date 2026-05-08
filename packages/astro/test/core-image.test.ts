@@ -1156,6 +1156,19 @@ describe('astro:image', () => {
 			assert.equal(datanested instanceof Buffer, true);
 		});
 
+		it('content collection images with empty alt preserve the alt attribute', async () => {
+			const html = await fixture.readFile('/blog/empty-alt/index.html');
+
+			const $ = cheerio.load(html);
+			let $img = $('img');
+			// There should be 3 images: 2 from frontmatter (direct + nested) + 1 from body
+			assert.equal($img.length, 3);
+			// The body image (third one) should have alt="" present
+			const bodyImg = $img.eq(2);
+			const altValue = bodyImg.attr('alt');
+			assert.equal(altValue, '', 'Empty alt attribute should be preserved as alt=""');
+		});
+
 		it('quality attribute produces a different file', async () => {
 			const html = await fixture.readFile('/quality/index.html');
 			const $ = cheerio.load(html);
