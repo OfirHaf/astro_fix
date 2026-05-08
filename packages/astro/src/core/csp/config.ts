@@ -66,11 +66,16 @@ const ALLOWED_DIRECTIVES = [
 type AllowedDirectives = (typeof ALLOWED_DIRECTIVES)[number];
 export type CspDirective = `${AllowedDirectives}${string | undefined}`;
 
-export const allowedDirectivesSchema = z.custom<CspDirective>((value) => {
-	if (typeof value !== 'string') {
-		return false;
-	}
-	return ALLOWED_DIRECTIVES.some((allowedValue) => {
-		return value.startsWith(allowedValue);
-	});
-});
+export const allowedDirectivesSchema = z.custom<CspDirective>(
+	(value) => {
+		if (typeof value !== 'string') {
+			return false;
+		}
+		return ALLOWED_DIRECTIVES.some((allowedValue) => {
+			return value.startsWith(allowedValue);
+		});
+	},
+	{
+		message: `Unsupported CSP directive. \`script-src\` and \`style-src\` are managed by Astro automatically. Use \`security.csp.scriptDirective\` and \`security.csp.styleDirective\` to configure them. Other allowed directives: ${ALLOWED_DIRECTIVES.join(', ')}.`,
+	},
+);

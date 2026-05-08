@@ -57,6 +57,23 @@ export const errorMap: $ZodErrorMap = (issue) => {
 		}
 
 		if (details.length === 0) {
+			// Check if any union branch has custom validation errors with descriptive messages.
+			// If so, surface those messages directly instead of showing generic shape info.
+			const customMessages: string[] = [];
+			for (const unionErrors of issue.errors) {
+				for (const _issue of unionErrors) {
+					if (_issue.code === 'custom' && _issue.message && _issue.message !== 'Invalid input') {
+						const issuePath = flattenErrorPath(_issue.path);
+						customMessages.push(`> ${prefix(issuePath, _issue.message)}`);
+					}
+				}
+			}
+			if (customMessages.length > 0) {
+				details.push(...customMessages);
+			}
+		}
+
+		if (details.length === 0) {
 			const expectedShapes: string[] = [];
 			for (const unionErrors of issue.errors) {
 				const expectedShape: string[] = [];
